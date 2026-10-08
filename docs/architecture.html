@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Raven 0 – System Architecture</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('raven-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="dark"]{--bg:#0a0b0e;--t1:#ffffff;--t2:#efeee9;--t3:#bcc0c7;--t4:#a0a5ae;--line:#555a64;--line2:#666b76;--amber:#ffb347;--ed:#c3cedd;--eh:#939aa6;--ep:#ffb347;--mute:#a0a5ae}
+[data-theme="light"]{--bg:#fbfaf7;--t1:#000000;--t2:#15161a;--t3:#33363d;--t4:#4f535b;--line:#7d8189;--line2:#6a6e76;--amber:#a85a00;--ed:#26303c;--eh:#656b74;--ep:#a85a00;--mute:#4f535b}
+#tm{position:fixed;top:max(16px,env(safe-area-inset-top));right:20px;background:none;border:0;padding:4px 0;font:400 13px "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.06em;color:var(--t3);cursor:pointer;transition:color .2s;z-index:10}
+#tm:hover,#tm:focus-visible{color:var(--amber);outline:none}
+html{background:var(--bg)}
+*{box-sizing:border-box}
+body{margin:0;padding:48px 20px;background:var(--bg);color:var(--t3);font:400 13px/1.7 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.03em;text-align:center}
+h1{margin:0 0 4px;font-weight:300;font-size:22px;letter-spacing:.14em;color:var(--t1)}
+.subt{margin:0 0 26px}
+.bar{display:flex;gap:6px 22px;justify-content:center;flex-wrap:wrap;font-size:12px;margin-bottom:16px}
+.bar i{display:inline-block;width:22px;border-top:1.5px solid var(--c);vertical-align:3px;margin-right:6px}
+.bar label{cursor:pointer}
+input[type=checkbox]{accent-color:var(--amber)}
+.wrap{overflow-x:auto;max-width:1000px;margin:0 auto}
+svg{display:block;min-width:820px;width:100%;height:auto}
+svg text{fill:var(--t2);font-family:inherit;font-weight:400;pointer-events:none}
+.n{cursor:pointer;transition:opacity .15s}
+.n rect.b{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+.n.sel rect.b{stroke:var(--amber)}
+.t{font-size:12.5px;fill:var(--t1)}.s{font-size:11px;fill:var(--t3)!important}
+.e{fill:none;stroke-width:1.8}.el{font-size:11px;fill:var(--t4)!important}
+.eg{transition:opacity .15s}.dim{opacity:.12}
+.av{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:6 5;pointer-events:all;cursor:pointer}
+.av.sel{stroke:var(--amber)}
+.ext{fill:none;stroke:var(--line2);stroke-width:1.5;stroke-dasharray:4 3}
+.lg{display:none}.showlog .lg{display:block}
+#info{max-width:520px;margin:28px auto 0;min-height:60px}
+#info h3{margin:0 0 8px;font-weight:400;font-size:13px;color:var(--t1);letter-spacing:.06em}
+.row{padding:6px 0}.row b{font-weight:400;color:var(--t2);font-size:13px}
+.in,.out{font-size:12px;color:var(--t4)}.out{color:var(--t3)}
+a{color:var(--t3);text-decoration:none;transition:color .2s}a:hover,a:focus-visible{color:var(--amber);outline:none}
+nav{margin-top:48px}nav a+a{margin-left:22px}
+</style>
+</head>
+<body>
+<button id="tm" aria-label="Toggle light and dark mode">Light</button>
+<main>
+<h1>RAVEN 0</h1>
+<p class="subt">System Architecture</p>
+<div class="bar">
+<span style="--c:var(--ed)"><i></i>Signal</span>
+<span style="--c:var(--ep)"><i style="border-top-style:dashed"></i>Power</span>
+<span style="--c:var(--eh)"><i style="border-top-style:dotted"></i>Physical</span>
+<label><input type="checkbox" id="lg"> Show logging links</label>
+</div>
+<div class="wrap"><svg id="d" viewBox="0 0 960 530" role="img" aria-label="Raven 0 system architecture diagram">
+<defs>
+<marker id="ms" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--ed)"/></marker>
+<marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--ep)"/></marker>
+<marker id="mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--eh)"/></marker>
+</defs>
+<g id="L"></g>
+</svg></div>
+<div id="info"></div>
+<nav><a href="index.html">Home</a><a href="overview.html">Overview</a></nav>
+</main>
+<script>
+const COL={};
+const N={
+comms:['Communications & Data',20,200,190,130,['Radio control','Video feed','Telemetry','Logging']],
+pwr:['Power System',20,400,190,100,['Battery','PDB','Monitoring']],
+se:['State Estimation',275,60,170,100,['Attitude + rates','Altitude · Ground distance','Absolute position','Relative position','Sensor fusion']],
+saf:['Safety',275,230,170,90,['Failsafe','Procedures']],
+ctl:['Control',500,150,140,170,['Mode manager (FSM)','Automator','Setpoint generator','Controller','Motor mixer']],
+air:['Airframe',720,40,200,100,['Structure','Mounting interfaces']],
+pt:['Powertrain',720,400,200,100,['ESC','Motors','Propellers']]};
+const E=[
+['pilot','comms','M70 110L70 200','s','user control\nsignals',76,146],
+['comms','pilot','M160 200L160 110','s','video,\ntelemetry',166,146],
+['comms','ctl','M210 205L500 205','s','sticks, mode, arm, link',312,219],
+['comms','saf','M210 275L275 275','s','link status',214,270],
+['se','ctl','M445 110L570 110L570 150','s','state estimate,\nhealth checks',577,128],
+['se','saf','M300 160L300 230','s','health checks',306,190],
+['saf','ctl','M445 270L500 270','s','failsafe\ntrigger',448,252],
+['ctl','pt','M570 320L570 440L720 440','s','motor commands',582,434],
+['pwr','pt','M210 470L720 470','p','regulated power',400,464],
+['pwr','avi','M210 410L250 410','p','battery status · regulated power',258,405,['saf','ctl','se']],
+['pt','air','M820 400L820 140','h','thrust, yaw\nreaction torque\n(physical)',828,262],
+['air','se','M720 80L445 80','h','vehicle motion (sensed)',520,73],
+['se','comms','M275 120L235 120L235 245L210 245','l'],
+['saf','comms','M275 305L210 305','l'],
+['ctl','comms','M520 320L520 360L150 360L150 330','l','to Logging',300,354],
+['pwr','comms','M80 400L80 330','l']];
+const D={
+air:[['Structure','—','—'],['Mounting interfaces','component dimensions and mass','mounting points']],
+pt:[['ESC','motor commands, regulated power','3-phase motor drive'],['Motors','3-phase motor drive','shaft torque'],['Propellers','shaft torque','thrust, yaw reaction torque']],
+pwr:[['Battery','charge','battery power'],['PDB','battery power','regulated power'],['Monitoring','battery power','battery status']],
+comms:[['Radio control','user control signals','stick positions, mode switch, arm state, link status'],['Video feed','camera video','transmit to ground station'],['Telemetry','time-stamped flight logs','transmit to ground station'],['Logging','state estimate, desired states, motor commands, sensor outputs, active flight mode, arm state, motor enable, battery status, failsafe trigger','time-stamped flight logs']],
+saf:[['Failsafe','link status, state health checks, battery status','failsafe trigger'],['Procedures','—','pre-flight checklist, test plan and rules']],
+se:[['Attitude + rates','IMU (acc, gyr, mag)','φ, θ, ψ, rates'],['Absolute altitude','barometer','z pos'],['Ground distance','ultrasonic','distance'],['Absolute position','GPS','x, y pos'],['Relative position (w.r.t. lower drone)','camera frames','rel. x, y, z pos'],['Sensor fusion','all outputs above','state estimate, state health checks']],
+ctl:[['Mode manager (FSM)','mode switch, arm state, failsafe trigger, battery status, state health checks, touchdown flag, disarm request, link status','active flight mode, motor enable'],['Automator (landing, GPS hold)','active flight mode, state estimate','automated setpoints, touchdown flag, disarm request'],['Setpoint generator','active flight mode, stick positions, state estimate, automated setpoints','desired states'],['Controller','desired states, state estimate','thrust and torque commands'],['Motor mixer','thrust and torque commands, motor enable','motor commands']],
+avi:[['Flight computer','—','hosts all software']]};
+const T={comms:'Communications & Data',pwr:'Power System',se:'State Estimation',saf:'Safety',ctl:'Control',air:'Airframe',pt:'Powertrain',avi:'Avionics'};
+const mk={s:'ms',p:'mp',h:'mh',l:'mh'},cl={s:'ed',p:'ep',h:'eh',l:'eh'};
+let h=`<rect class="av" id="avi" x="250" y="20" width="415" height="400" rx="16"/><text class="t" x="264" y="42" style="fill:var(--mute)">AVIONICS</text><text class="s" x="332" y="42">Flight computer</text>
+<g class="n" data-k="pilot"><rect class="ext" x="20" y="60" width="190" height="50" rx="10"/><text class="t" x="32" y="82">Pilot · Ground station</text><text class="s" x="32" y="97">external</text></g>`;
+E.forEach((e,i)=>{const lab=(e[4]||'').split('\n').map((t,j)=>`<tspan x="${e[5]}" dy="${j?11:0}">${t}</tspan>`).join('');
+h+=`<g class="eg ${e[3]=='l'?'lg':''}" data-i="${i}"><path class="e" d="${e[2]}" style="stroke:var(--${cl[e[3]]})${e[3]=='p'?';stroke-dasharray:7 4':e[3]=='h'||e[3]=='l'?';stroke-dasharray:2 4':''}" marker-end="url(#${mk[e[3]]})"/>${e[4]?`<text class="el" x="${e[5]}" y="${e[6]}">${lab}</text>`:''}</g>`});
+Object.entries(N).forEach(([k,[t,x,y,w,hh,subs]])=>{h+=`<g class="n" data-k="${k}"><rect class="b" x="${x}" y="${y}" width="${w}" height="${hh}" rx="10" /><text class="t" x="${x+14}" y="${y+22}">${t}</text>${subs.map((s,i)=>`<text class="s" x="${x+14}" y="${y+40+i*14}">${s}</text>`).join('')}</g>`});
+document.getElementById('L').innerHTML=h;
+const svg=document.getElementById('d'),info=document.getElementById('info');
+const hint='Select a system';info.textContent=hint;
+function reset(){svg.querySelectorAll('.n,.eg').forEach(e=>e.classList.remove('dim','sel'));document.getElementById('avi').classList.remove('sel');info.textContent=hint}
+function pick(k){svg.querySelectorAll('.n').forEach(n=>n.classList.toggle('sel',n.dataset.k==k));document.getElementById('avi').classList.toggle('sel',k=='avi');
+svg.querySelectorAll('.eg').forEach(g=>{const e=E[g.dataset.i];g.classList.toggle('dim',!(e[0]==k||e[1]==k||(e[7]&&e[7].includes(k))))});
+const keep=new Set([k]);E.forEach(e=>{if(e[0]==k||e[1]==k||(e[7]&&e[7].includes(k))){keep.add(e[0]);keep.add(e[1]);(e[7]||[]).forEach(x=>keep.add(x))}});
+svg.querySelectorAll('.n').forEach(n=>n.classList.toggle('dim',!keep.has(n.dataset.k)));
+info.innerHTML=`<h3>${T[k]}</h3>`+D[k].map(r=>`<div class="row"><b>${r[0]}</b><div class="in">← ${r[1]}</div><div class="out">→ ${r[2]}</div></div>`).join('')}
+svg.querySelectorAll('.n').forEach(n=>{if(D[n.dataset.k])n.onclick=ev=>{ev.stopPropagation();pick(n.dataset.k)}});
+document.getElementById('avi').onclick=ev=>{ev.stopPropagation();pick('avi')};
+svg.onclick=reset;
+document.getElementById('lg').onchange=ev=>document.querySelector('.wrap').classList.toggle('showlog',ev.target.checked);
+</script>
+<script>
+(function(){var b=document.getElementById('tm'),r=document.documentElement;function s(){b.textContent=r.dataset.theme=='light'?'Dark':'Light'}s();b.onclick=function(){var t=r.dataset.theme=='light'?'dark':'light';r.dataset.theme=t;try{localStorage.setItem('raven-theme',t)}catch(e){}s()}})();
+</script>
+</body>
+</html>
