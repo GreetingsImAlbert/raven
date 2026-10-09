@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raven – Overview</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('raven-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style/base.css">
+<link rel="stylesheet" href="../style/overview.css">
+</head>
+<body>
+<button id="tm" aria-label="Toggle light and dark mode">Light</button>
+<main>
+<div class="hero">
+<img class="d" src="../assets/img/raven-hero-3d-dark.webp" width="2400" height="1000" alt="Two Raven quadrotors docked vertically, one above the other">
+<img class="l" src="../assets/img/raven-hero-3d-light.webp" width="2400" height="1000" alt="Two Raven quadrotors docked vertically, one above the other">
+</div>
+<h1>RAVEN</h1>
+<p>Rigid · Aerial · Vertical docking of identical quadrotors</p>
+
+<div class="g">
+<p class="hi">Raven 0</p>
+<p>First prototype. A cheap, simple quadrotor built to learn fast.</p>
+</div>
+
+<div class="g">
+<p>RC flight</p>
+<p>Autonomous landing and GPS hold</p>
+<p>Reliable, logged flights</p>
+</div>
+
+<p class="g dim">Raven 1 · coming soon</p>
+
+<nav><a href="../index.html">Home</a><hr><a href="overview.html" aria-current="page">Overview</a><span>Raven 0</span><a href="0_architecture.html">System Architecture</a><a href="0_ownership.html">Ownership</a></nav>
+</main>
+<script>
+(function(){var b=document.getElementById('tm'),r=document.documentElement;function s(){b.textContent=r.dataset.theme=='light'?'Dark':'Light'}s();b.onclick=function(){var t=r.dataset.theme=='light'?'dark':'light';r.dataset.theme=t;try{localStorage.setItem('raven-theme',t)}catch(e){}s()}})();
+</script>
+</body>
+</html>

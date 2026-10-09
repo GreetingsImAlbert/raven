@@ -1,0 +1,27 @@
+html{background:var(--bg)}
+*{box-sizing:border-box}
+body{margin:0;padding:48px 20px;background:var(--bg);color:var(--t3);font:400 13px/1.7 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.03em;text-align:center}
+h1{margin:0 0 4px;font-weight:300;font-size:22px;letter-spacing:.14em;color:var(--t1)}
+.subt{margin:0 0 26px}
+.bar{display:flex;gap:6px 22px;justify-content:center;flex-wrap:wrap;font-size:12px;margin-bottom:16px}
+.bar i{display:inline-block;width:22px;border-top:1.5px solid var(--c);vertical-align:3px;margin-right:6px}
+.bar label{cursor:pointer}
+input[type=checkbox]{accent-color:var(--amber)}
+.wrap{overflow-x:auto}
+svg{display:block;min-width:820px;width:100%;height:auto}
+svg text{fill:var(--t2);font-family:inherit;font-weight:400;pointer-events:none}
+.n{cursor:pointer;transition:opacity .15s}
+.n rect.b{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+.n.sel rect.b{stroke:var(--amber)}
+.t{font-size:12.5px;fill:var(--t1)}.s{font-size:11px;fill:var(--t3)!important}
+.e{fill:none;stroke-width:1.8}.el{font-size:11px;fill:var(--t4)!important}
+.eg{transition:opacity .15s}.dim{opacity:.12}
+.av{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:6 5;pointer-events:all;cursor:pointer}
+.av.sel{stroke:var(--amber)}
+.ext{fill:none;stroke:var(--line2);stroke-width:1.5;stroke-dasharray:4 3}
+.lg{display:none}.showlog .lg{display:block}
+#info{max-width:520px;margin:28px auto 0;min-height:60px}
+#info h3{margin:0 0 8px;font-weight:400;font-size:13px;color:var(--t1);letter-spacing:.06em}
+.row{padding:6px 0}.row b{font-weight:400;color:var(--t2);font-size:13px}
+.in,.out{font-size:12px;color:var(--t4)}.out{color:var(--t3)}
+a{color:var(--t3);text-decoration:none;transition:color .2s}a:hover,a:focus-visible{color:var(--amber);outline:none}

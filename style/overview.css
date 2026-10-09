@@ -1,0 +1,15 @@
+html,body{margin:0}
+html{height:100%}
+body{min-height:100%;box-sizing:border-box}
+html{background:var(--bg)}
+body{display:flex;align-items:center;justify-content:center;padding:40px 24px;text-align:center;color:var(--t3);font:400 13px/1.9 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.04em}
+h1{margin:0 0 4px;font-weight:300;font-size:22px;letter-spacing:.14em;color:var(--t1)}
+p{margin:0}
+.g{margin-top:36px}
+.hi{color:var(--t2)}
+.dim{opacity:.6}
+a{color:var(--t3);text-decoration:none;transition:color .2s}
+a:hover,a:focus-visible{color:var(--amber);outline:none}
+.hero{margin:0 0 28px}
+.hero img{display:block;width:100%;height:auto}
+[data-theme="light"] .hero .d,:root:not([data-theme="light"]) .hero .l{display:none}

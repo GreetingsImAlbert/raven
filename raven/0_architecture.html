@@ -8,40 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet">
-<style>
-:root,[data-theme="dark"]{--bg:#0a0b0e;--t1:#ffffff;--t2:#efeee9;--t3:#bcc0c7;--t4:#a0a5ae;--line:#555a64;--line2:#666b76;--amber:#ffb347;--ed:#c3cedd;--eh:#939aa6;--ep:#ffb347;--mute:#a0a5ae}
-[data-theme="light"]{--bg:#fbfaf7;--t1:#000000;--t2:#15161a;--t3:#33363d;--t4:#4f535b;--line:#7d8189;--line2:#6a6e76;--amber:#a85a00;--ed:#26303c;--eh:#656b74;--ep:#a85a00;--mute:#4f535b}
-#tm{position:fixed;top:max(16px,env(safe-area-inset-top));right:20px;background:none;border:0;padding:4px 0;font:400 13px "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.06em;color:var(--t3);cursor:pointer;transition:color .2s;z-index:10}
-#tm:hover,#tm:focus-visible{color:var(--amber);outline:none}
-html{background:var(--bg)}
-*{box-sizing:border-box}
-body{margin:0;padding:48px 20px;background:var(--bg);color:var(--t3);font:400 13px/1.7 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.03em;text-align:center}
-h1{margin:0 0 4px;font-weight:300;font-size:22px;letter-spacing:.14em;color:var(--t1)}
-.subt{margin:0 0 26px}
-.bar{display:flex;gap:6px 22px;justify-content:center;flex-wrap:wrap;font-size:12px;margin-bottom:16px}
-.bar i{display:inline-block;width:22px;border-top:1.5px solid var(--c);vertical-align:3px;margin-right:6px}
-.bar label{cursor:pointer}
-input[type=checkbox]{accent-color:var(--amber)}
-.wrap{overflow-x:auto;max-width:1000px;margin:0 auto}
-svg{display:block;min-width:820px;width:100%;height:auto}
-svg text{fill:var(--t2);font-family:inherit;font-weight:400;pointer-events:none}
-.n{cursor:pointer;transition:opacity .15s}
-.n rect.b{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
-.n.sel rect.b{stroke:var(--amber)}
-.t{font-size:12.5px;fill:var(--t1)}.s{font-size:11px;fill:var(--t3)!important}
-.e{fill:none;stroke-width:1.8}.el{font-size:11px;fill:var(--t4)!important}
-.eg{transition:opacity .15s}.dim{opacity:.12}
-.av{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:6 5;pointer-events:all;cursor:pointer}
-.av.sel{stroke:var(--amber)}
-.ext{fill:none;stroke:var(--line2);stroke-width:1.5;stroke-dasharray:4 3}
-.lg{display:none}.showlog .lg{display:block}
-#info{max-width:520px;margin:28px auto 0;min-height:60px}
-#info h3{margin:0 0 8px;font-weight:400;font-size:13px;color:var(--t1);letter-spacing:.06em}
-.row{padding:6px 0}.row b{font-weight:400;color:var(--t2);font-size:13px}
-.in,.out{font-size:12px;color:var(--t4)}.out{color:var(--t3)}
-a{color:var(--t3);text-decoration:none;transition:color .2s}a:hover,a:focus-visible{color:var(--amber);outline:none}
-nav{margin-top:48px}nav a+a{margin-left:22px}
-</style>
+<link rel="stylesheet" href="../style/base.css">
+<link rel="stylesheet" href="../style/0_architecture.css">
 </head>
 <body>
 <button id="tm" aria-label="Toggle light and dark mode">Light</button>
@@ -63,10 +31,10 @@ nav{margin-top:48px}nav a+a{margin-left:22px}
 <g id="L"></g>
 </svg></div>
 <div id="info"></div>
-<nav><a href="index.html">Home</a><a href="overview.html">Overview</a></nav>
+<nav><a href="../index.html">Home</a><hr><a href="overview.html">Overview</a><span>Raven 0</span><a href="0_architecture.html" aria-current="page">System Architecture</a><a href="0_ownership.html">Ownership</a></nav>
 </main>
 <script>
-/* Content comes from architecture.md. Only the diagram layout lives here:
+/* Content comes from 0_architecture.md. Only the diagram layout lives here:
    box positions (matched to system titles in the .md) and the arrows between systems.
    A system in the .md with no LAYOUT entry is drawn in a row under the diagram. */
 const LAYOUT={
@@ -154,10 +122,10 @@ info.innerHTML=`<h3>${esc(T[k])}</h3>`+D[k].map(r=>`<div class="row"><b>${esc(r[
 svg.onclick=reset;
 document.getElementById('lg').onchange=ev=>document.querySelector('.wrap').classList.toggle('showlog',ev.target.checked);
 
-info.textContent='Loading architecture.md';
-fetch('architecture.md',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+info.textContent='Loading 0_architecture.md';
+fetch('0_architecture.md',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
 .then(md=>{const s=parse(md);if(!s.length)throw new Error('no systems found');build(s)})
-.catch(err=>{info.innerHTML=`Couldn't load architecture.md (${esc(err.message)}). Keep it in the same folder as this page. If you opened the page straight from disk, serve the folder instead, e.g. <code>python -m http.server</code> in docs/.`});
+.catch(err=>{info.innerHTML=`Couldn't load 0_architecture.md (${esc(err.message)}). Keep it in the same folder as this page. If you opened the page straight from disk, serve the folder instead, e.g. <code>python -m http.server</code> in docs/.`});
 </script>
 <script>
 (function(){var b=document.getElementById('tm'),r=document.documentElement;function s(){b.textContent=r.dataset.theme=='light'?'Dark':'Light'}s();b.onclick=function(){var t=r.dataset.theme=='light'?'dark':'light';r.dataset.theme=t;try{localStorage.setItem('raven-theme',t)}catch(e){}s()}})();
