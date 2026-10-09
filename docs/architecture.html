@@ -66,22 +66,25 @@ nav{margin-top:48px}nav a+a{margin-left:22px}
 <nav><a href="index.html">Home</a><a href="overview.html">Overview</a></nav>
 </main>
 <script>
-const COL={};
-const N={
-comms:['Communications & Data',20,200,190,130,['Radio control','Video feed','Telemetry','Logging']],
-pwr:['Power System',20,400,190,100,['Battery','PDB','Monitoring']],
-se:['State Estimation',275,60,170,100,['Attitude + rates','Altitude · Ground distance','Absolute position','Relative position','Sensor fusion']],
-saf:['Safety',275,230,170,90,['Failsafe','Procedures']],
-ctl:['Control',500,150,140,170,['Mode manager (FSM)','Automator','Setpoint generator','Controller','Motor mixer']],
-air:['Airframe',720,40,200,100,['Structure','Mounting interfaces']],
-pt:['Powertrain',720,400,200,100,['ESC','Motors','Propellers']]};
+/* Content comes from architecture.md. Only the diagram layout lives here:
+   box positions (matched to system titles in the .md) and the arrows between systems.
+   A system in the .md with no LAYOUT entry is drawn in a row under the diagram. */
+const LAYOUT={
+comms:['Communications & Data',20,200,190,130],
+pwr:['Power System',20,400,190,100],
+se:['State Estimation',275,46,170,134],
+saf:['Safety',275,230,170,90],
+ctl:['Control',500,150,140,170],
+air:['Airframe',720,40,200,100],
+pt:['Powertrain',720,400,200,100],
+avi:['Avionics']};
 const E=[
 ['pilot','comms','M70 110L70 200','s','user control\nsignals',76,146],
 ['comms','pilot','M160 200L160 110','s','video,\ntelemetry',166,146],
 ['comms','ctl','M210 205L500 205','s','sticks, mode, arm, link',312,219],
 ['comms','saf','M210 275L275 275','s','link status',214,270],
 ['se','ctl','M445 110L570 110L570 150','s','state estimate,\nhealth checks',577,128],
-['se','saf','M300 160L300 230','s','health checks',306,190],
+['se','saf','M300 180L300 230','s','health checks',306,196],
 ['saf','ctl','M445 270L500 270','s','failsafe\ntrigger',448,252],
 ['ctl','pt','M570 320L570 440L720 440','s','motor commands',582,434],
 ['pwr','pt','M210 470L720 470','p','regulated power',400,464],
@@ -92,35 +95,69 @@ const E=[
 ['saf','comms','M275 305L210 305','l'],
 ['ctl','comms','M520 320L520 360L150 360L150 330','l','to Logging',300,354],
 ['pwr','comms','M80 400L80 330','l']];
-const D={
-air:[['Structure','—','—'],['Mounting interfaces','component dimensions and mass','mounting points']],
-pt:[['ESC','motor commands, regulated power','3-phase motor drive'],['Motors','3-phase motor drive','shaft torque'],['Propellers','shaft torque','thrust, yaw reaction torque']],
-pwr:[['Battery','charge','battery power'],['PDB','battery power','regulated power'],['Monitoring','battery power','battery status']],
-comms:[['Radio control','user control signals','stick positions, mode switch, arm state, link status'],['Video feed','camera video','transmit to ground station'],['Telemetry','time-stamped flight logs','transmit to ground station'],['Logging','state estimate, desired states, motor commands, sensor outputs, active flight mode, arm state, motor enable, battery status, failsafe trigger','time-stamped flight logs']],
-saf:[['Failsafe','link status, state health checks, battery status','failsafe trigger'],['Procedures','—','pre-flight checklist, test plan and rules']],
-se:[['Attitude + rates','IMU (acc, gyr, mag)','φ, θ, ψ, rates'],['Absolute altitude','barometer','z pos'],['Ground distance','ultrasonic','distance'],['Absolute position','GPS','x, y pos'],['Relative position (w.r.t. lower drone)','camera frames','rel. x, y, z pos'],['Sensor fusion','all outputs above','state estimate, state health checks']],
-ctl:[['Mode manager (FSM)','mode switch, arm state, failsafe trigger, battery status, state health checks, touchdown flag, disarm request, link status','active flight mode, motor enable'],['Automator (landing, GPS hold)','active flight mode, state estimate','automated setpoints, touchdown flag, disarm request'],['Setpoint generator','active flight mode, stick positions, state estimate, automated setpoints','desired states'],['Controller','desired states, state estimate','thrust and torque commands'],['Motor mixer','thrust and torque commands, motor enable','motor commands']],
-avi:[['Flight computer','—','hosts all software']]};
-const T={comms:'Communications & Data',pwr:'Power System',se:'State Estimation',saf:'Safety',ctl:'Control',air:'Airframe',pt:'Powertrain',avi:'Avionics'};
 const mk={s:'ms',p:'mp',h:'mh',l:'mh'},cl={s:'ed',p:'ep',h:'eh',l:'eh'};
-let h=`<rect class="av" id="avi" x="250" y="20" width="415" height="400" rx="16"/><text class="t" x="264" y="42" style="fill:var(--mute)">AVIONICS</text><text class="s" x="332" y="42">Flight computer</text>
-<g class="n" data-k="pilot"><rect class="ext" x="20" y="60" width="190" height="50" rx="10"/><text class="t" x="32" y="82">Pilot · Ground station</text><text class="s" x="32" y="97">external</text></g>`;
-E.forEach((e,i)=>{const lab=(e[4]||'').split('\n').map((t,j)=>`<tspan x="${e[5]}" dy="${j?11:0}">${t}</tspan>`).join('');
-h+=`<g class="eg ${e[3]=='l'?'lg':''}" data-i="${i}"><path class="e" d="${e[2]}" style="stroke:var(--${cl[e[3]]})${e[3]=='p'?';stroke-dasharray:7 4':e[3]=='h'||e[3]=='l'?';stroke-dasharray:2 4':''}" marker-end="url(#${mk[e[3]]})"/>${e[4]?`<text class="el" x="${e[5]}" y="${e[6]}">${lab}</text>`:''}</g>`});
-Object.entries(N).forEach(([k,[t,x,y,w,hh,subs]])=>{h+=`<g class="n" data-k="${k}"><rect class="b" x="${x}" y="${y}" width="${w}" height="${hh}" rx="10" /><text class="t" x="${x+14}" y="${y+22}">${t}</text>${subs.map((s,i)=>`<text class="s" x="${x+14}" y="${y+40+i*14}">${s}</text>`).join('')}</g>`});
-document.getElementById('L').innerHTML=h;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]/g,'');
+const ITEM=/^\s*(?:\d+[.)]|[-*+])\s+/;
+
+/* A system is any non-list line followed by a list. List items are subsystems;
+   items starting with ← (or <-) are inputs, → (or ->) are outputs. */
+function parse(md){
+const L=md.replace(/\r/g,'').split('\n'),out=[];let cur=null,sub=null;
+L.forEach((raw,i)=>{const l=raw.trim();if(!l)return;
+if(ITEM.test(raw)){if(!cur)return;const c=raw.replace(ITEM,'').trim(),m=c.match(/^(←|<-|→|->)\s*(.*)$/);
+if(m){if(sub)sub[m[1]=='←'||m[1]=='<-'?'in':'out'].push(m[2].trim())}
+else{sub={name:c,in:[],out:[]};cur.subs.push(sub)}return}
+let j=i+1;while(j<L.length&&!L[j].trim())j++;
+if(j<L.length&&ITEM.test(L[j])){cur={title:l.replace(/^#+\s*/,'').replace(/\*\*|__/g,'').trim(),subs:[]};out.push(cur)}else cur=null;sub=null});
+return out}
+
 const svg=document.getElementById('d'),info=document.getElementById('info');
-const hint='Select a system';info.textContent=hint;
+const hint='Select a system';
+let N={},D={},T={},EE=[];
+
+function build(systems){
+N={};D={};T={};const used=new Set(),extra=[];
+systems.forEach(s=>{
+const hit=Object.entries(LAYOUT).find(([k,v])=>!used.has(k)&&norm(v[0])==norm(s.title));
+const k=hit?hit[0]:'x'+extra.length;used.add(k);
+T[k]=s.title;D[k]=s.subs.map(r=>[r.name,r.in.join(', ')||'—',r.out.join(', ')||'—']);
+if(k=='avi')return;
+const labels=s.subs.map(r=>r.name.replace(/\s*\([^)]*\)\s*$/,''));
+const need=42+labels.length*14;
+if(hit){const[,x,y,w,h]=hit[1];N[k]=[s.title,x,y,w,Math.max(h,need),labels]}
+else{N[k]=[s.title,0,0,190,Math.max(90,need),labels];extra.push(k)}});
+let vbH=530;
+for(let r=0;r*4<extra.length;r++){const row=extra.slice(r*4,r*4+4),y=vbH+10,rh=Math.max(...row.map(k=>N[k][4]));
+row.forEach((k,c)=>{N[k][1]=20+c*235;N[k][2]=y});vbH=y+rh+20}
+svg.setAttribute('viewBox',`0 0 960 ${vbH}`);
+const has=k=>k=='pilot'||k=='avi'||N[k];
+EE=E.filter(e=>has(e[0])&&has(e[1]));
+const avOK=!!D.avi;
+let h=`<rect class="av" id="avi" x="250" y="10" width="415" height="410" rx="16"/><text class="t" x="264" y="32" style="fill:var(--mute)">AVIONICS</text><text class="s" x="332" y="32">${esc(avOK?(D.avi.map(r=>r[0]).join(', ')):'Flight computer')}</text>
+<g class="n" data-k="pilot"><rect class="ext" x="20" y="60" width="190" height="50" rx="10"/><text class="t" x="32" y="82">Pilot · Ground station</text><text class="s" x="32" y="97">external</text></g>`;
+EE.forEach((e,i)=>{const lab=(e[4]||'').split('\n').map((t,j)=>`<tspan x="${e[5]}" dy="${j?11:0}">${esc(t)}</tspan>`).join('');
+h+=`<g class="eg ${e[3]=='l'?'lg':''}" data-i="${i}"><path class="e" d="${e[2]}" style="stroke:var(--${cl[e[3]]})${e[3]=='p'?';stroke-dasharray:7 4':e[3]=='h'||e[3]=='l'?';stroke-dasharray:2 4':''}" marker-end="url(#${mk[e[3]]})"/>${e[4]?`<text class="el" x="${e[5]}" y="${e[6]}">${lab}</text>`:''}</g>`});
+Object.entries(N).forEach(([k,[t,x,y,w,hh,subs]])=>{h+=`<g class="n" data-k="${k}"><rect class="b" x="${x}" y="${y}" width="${w}" height="${hh}" rx="10" /><text class="t" x="${x+14}" y="${y+22}">${esc(t)}</text>${subs.map((s,i)=>`<text class="s" x="${x+14}" y="${y+40+i*14}">${esc(s)}</text>`).join('')}</g>`});
+document.getElementById('L').innerHTML=h;
+svg.querySelectorAll('.n').forEach(n=>{if(D[n.dataset.k])n.onclick=ev=>{ev.stopPropagation();pick(n.dataset.k)}});
+const av=document.getElementById('avi');if(avOK)av.onclick=ev=>{ev.stopPropagation();pick('avi')};else av.style.cursor='default';
+info.textContent=hint}
+
 function reset(){svg.querySelectorAll('.n,.eg').forEach(e=>e.classList.remove('dim','sel'));document.getElementById('avi').classList.remove('sel');info.textContent=hint}
 function pick(k){svg.querySelectorAll('.n').forEach(n=>n.classList.toggle('sel',n.dataset.k==k));document.getElementById('avi').classList.toggle('sel',k=='avi');
-svg.querySelectorAll('.eg').forEach(g=>{const e=E[g.dataset.i];g.classList.toggle('dim',!(e[0]==k||e[1]==k||(e[7]&&e[7].includes(k))))});
-const keep=new Set([k]);E.forEach(e=>{if(e[0]==k||e[1]==k||(e[7]&&e[7].includes(k))){keep.add(e[0]);keep.add(e[1]);(e[7]||[]).forEach(x=>keep.add(x))}});
+const touches=e=>e[0]==k||e[1]==k||(e[7]&&e[7].includes(k));
+svg.querySelectorAll('.eg').forEach(g=>g.classList.toggle('dim',!touches(EE[g.dataset.i])));
+const keep=new Set([k]);EE.forEach(e=>{if(touches(e)){keep.add(e[0]);keep.add(e[1]);(e[7]||[]).forEach(x=>keep.add(x))}});
 svg.querySelectorAll('.n').forEach(n=>n.classList.toggle('dim',!keep.has(n.dataset.k)));
-info.innerHTML=`<h3>${T[k]}</h3>`+D[k].map(r=>`<div class="row"><b>${r[0]}</b><div class="in">← ${r[1]}</div><div class="out">→ ${r[2]}</div></div>`).join('')}
-svg.querySelectorAll('.n').forEach(n=>{if(D[n.dataset.k])n.onclick=ev=>{ev.stopPropagation();pick(n.dataset.k)}});
-document.getElementById('avi').onclick=ev=>{ev.stopPropagation();pick('avi')};
+info.innerHTML=`<h3>${esc(T[k])}</h3>`+D[k].map(r=>`<div class="row"><b>${esc(r[0])}</b><div class="in">← ${esc(r[1])}</div><div class="out">→ ${esc(r[2])}</div></div>`).join('')}
 svg.onclick=reset;
 document.getElementById('lg').onchange=ev=>document.querySelector('.wrap').classList.toggle('showlog',ev.target.checked);
+
+info.textContent='Loading architecture.md';
+fetch('architecture.md',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+.then(md=>{const s=parse(md);if(!s.length)throw new Error('no systems found');build(s)})
+.catch(err=>{info.innerHTML=`Couldn't load architecture.md (${esc(err.message)}). Keep it in the same folder as this page. If you opened the page straight from disk, serve the folder instead, e.g. <code>python -m http.server</code> in docs/.`});
 </script>
 <script>
 (function(){var b=document.getElementById('tm'),r=document.documentElement;function s(){b.textContent=r.dataset.theme=='light'?'Dark':'Light'}s();b.onclick=function(){var t=r.dataset.theme=='light'?'dark':'light';r.dataset.theme=t;try{localStorage.setItem('raven-theme',t)}catch(e){}s()}})();
