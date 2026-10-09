@@ -8,13 +8,10 @@ Communications & Data
 1. Radio control
    1. ← user control signals
    2. → stick positions, mode switch, arm state, link status
-2. Video feed
-   1. ← camera video
-   2. → transmit to ground station
-3. Telemetry
+2. Telemetry
    1. ← time-stamped flight logs
    2. → transmit to ground station
-4. Logging
+3. Logging
    1. ← state estimate, desired states, motor commands, sensor outputs, active flight mode, arm state, motor enable, battery status, failsafe trigger
    2. → time-stamped flight logs
 
@@ -36,16 +33,10 @@ State Estimation
 2. Absolute altitude
    1. ← barometer
    2. → z pos
-3. Ground distance
-   1. ← ultrasonic
-   2. → distance
-4. Absolute position
+3. Absolute position
    1. ← GPS
    2. → x, y pos
-5. Relative position (w.r.t. lower drone)
-   1. ← camera frames
-   2. → rel. x, y, z pos
-6. Sensor fusion
+4. Sensor fusion
    1. ← all outputs above
    2. → state estimate, state health checks
 
