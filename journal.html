@@ -1,0 +1,84 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('raven-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style/base.css">
+<link rel="stylesheet" href="style/journal.css">
+</head>
+<body>
+<button id="tm" aria-label="Toggle light and dark mode">Light</button>
+<nav><a href="index.html">Home</a><hr><a href="journal.html" aria-current="page">Journal</a></nav>
+<main>
+<h1>JOURNAL</h1>
+<p class="sub">Project log · newest first</p>
+
+<details class="new">
+<summary>New entry</summary>
+<form id="nf">
+<input id="nt" type="text" placeholder="Title (optional)" autocomplete="off">
+<textarea id="nc" rows="10" placeholder="Write in markdown" required></textarea>
+<div class="row"><button type="submit">Commit on GitHub</button><button type="button" id="nd">Discard draft</button></div>
+<p class="hint">Opens GitHub with the entry filled in. Click <b>Commit changes</b> there, and it shows up here about a minute later.<br>If you edit an entry directly on GitHub, avoid <code>&#123;&#123;</code> and <code>&#123;%</code> in the text and keep titles in quotes. You don't need to worry about either here.</p>
+</form>
+</details>
+
+{%- comment -%} Entries without a title get one from Jekyll based on their filename, so compare against that to hide it. {%- endcomment -%}
+{% assign entries = site.journal | sort: "modified" | reverse %}
+{% for e in entries %}
+{% assign auto = e.slug | replace: "-", " " | capitalize %}
+<article>
+<header>
+<time datetime="{{ e.modified | date_to_xmlschema }}">{{ e.modified | date: "%b %-d, %Y · %H:%M" }}</time>
+<a class="ed" href="https://github.com/dockingconfirmed/site/edit/main/{{ e.relative_path }}">Edit</a>
+</header>
+{% if e.title != auto %}<h2>{{ e.title | escape }}</h2>{% endif %}
+<div class="md">{{ e.content }}</div>
+</article>
+{% else %}
+<p class="sub">No entries yet.</p>
+{% endfor %}
+</main>
+<script>
+(function(){var b=document.getElementById('tm'),r=document.documentElement;function s(){b.textContent=r.dataset.theme=='light'?'Dark':'Light'}s();b.onclick=function(){var t=r.dataset.theme=='light'?'dark':'light';r.dataset.theme=t;try{localStorage.setItem('raven-theme',t)}catch(e){}s()}})();
+
+(function(){
+var f=document.getElementById('nf'),t=document.getElementById('nt'),c=document.getElementById('nc'),K='journal-draft';
+try{var d=JSON.parse(localStorage.getItem(K)||'null');if(d){t.value=d.t||'';c.value=d.c||'';if(d.t||d.c)f.parentNode.open=true}}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify({t:t.value,c:c.value}))}catch(e){}}
+t.oninput=c.oninput=save;
+document.getElementById('nd').onclick=function(){if(!(t.value||c.value)||confirm('Discard this draft?')){t.value=c.value='';try{localStorage.removeItem(K)}catch(e){}}};
+function p(n){return String(n).padStart(2,'0')}
+f.onsubmit=function(ev){
+ev.preventDefault();
+var n=new Date(),o=-n.getTimezoneOffset(),
+day=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate()),
+iso=day+'T'+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds())+(o<0?'-':'+')+p(Math.floor(Math.abs(o)/60))+':'+p(Math.abs(o)%60),
+title=t.value.trim(),body=c.value.trim();
+// Jekyll would treat Liquid tags in an entry as template code, so mark them literal.
+// (Strings are split so Liquid doesn't see tags in this page either.)
+var L='{',R='}';
+if(body.indexOf(L+L)>=0||body.indexOf(L+'%')>=0)body=L+'% raw %'+R+'\n'+body+'\n'+L+'% endraw %'+R;
+var md='---\n'+(title?'title: '+JSON.stringify(title)+'\n':'')+'modified: '+iso+'\n---\n'+body+'\n',
+base='https://github.com/dockingconfirmed/site/new/main/_journal?filename='+day+'-'+p(n.getHours())+p(n.getMinutes())+'.md',
+url=base+'&value='+encodeURIComponent(md);
+// Very long entries don't fit in a URL; copy them so they can be pasted on GitHub instead.
+if(url.length>8000){
+if(navigator.clipboard)navigator.clipboard.writeText(md);
+alert('This entry is too long to send through the link. It has been copied to your clipboard; paste it into the GitHub editor that opens next.');
+url=base;
+}
+window.open(url,'_blank','noopener');
+};
+})();
+</script>
+</body>
+</html>

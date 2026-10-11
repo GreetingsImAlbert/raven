@@ -1,0 +1,19 @@
+# GitHub Pages builds this site with Jekyll. Only files that start with a
+# front matter block (---) are processed; everything else is copied as-is.
+
+timezone: Asia/Manila
+theme: null
+
+# Journal entries live in _journal/ as markdown files. They aren't published as
+# their own pages; journal.html loops over them at build time.
+collections:
+  journal:
+    output: false
+
+# GitHub Pages would otherwise turn every .md file into an .html page, which
+# would overwrite raven/0_architecture.html with its .md source (that page
+# fetches the raw .md, so it must stay a plain file).
+require_front_matter: true
+
+exclude:
+  - LICENSE
